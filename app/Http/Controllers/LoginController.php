@@ -4,7 +4,7 @@
  * @ Author: MD Rifatul Islam
  * @ Create Time: 2020-11-16 10:13:37
  * @ Modified by: Your name
- * @ Modified time: 2020-12-03 15:37:09
+ * @ Modified time: 2020-12-08 15:36:22
  * @ Description:
  */
 
@@ -23,26 +23,31 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        // $request->validate([
-        //     'email' => ['requred', 'email'],
-        //     'email' => ['requred']
-        // ]);
-
-        $validatedData = $request->validate([
-            'email' => 'required',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            // throw ValidationException::withMessages([
-            //     'email' => 'The provided email is incorrect'
+        try {
+            // $request->validate([
+            //     'email' => ['requred', 'email'],
+            //     'email' => ['requred']
             // ]);
-            throw new HttpResponseException(response()->json('', 201));
+
+            $validatedData = $request->validate([
+                'email' => 'required',
+                'password' => 'required',
+            ]);
+
+            $user = User::where('email', $request->email)->first();
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'email' => 'The provided email is incorrect'
+                ]);
+                throw new HttpResponseException(response()->json('Invalid User', 201));
+            }
+            
+            return response()->json( $user->createToken('Auth Token')->accessToken, 201);
+        // return response()->success( $user->createToken('Auth Token')->accessToken, trans('messages.success_message'), Response::HTTP_OK);
+            //return $user->createToken('Auth Token')->accessToken;
+        } catch (Exception $e) {
+                     ////return error message
+            return response()->json(["message" => "Internal server error"], 500);
         }
-        
-        return response()->json( $user->createToken('Auth Token')->accessToken, 201);
-       // return response()->success( $user->createToken('Auth Token')->accessToken, trans('messages.success_message'), Response::HTTP_OK);
-        //return $user->createToken('Auth Token')->accessToken;
     }
 }
