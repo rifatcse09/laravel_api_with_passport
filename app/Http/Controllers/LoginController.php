@@ -4,7 +4,7 @@
  * @ Author: MD Rifatul Islam
  * @ Create Time: 2020-11-16 10:13:37
  * @ Modified by: Your name
- * @ Modified time: 2020-12-08 15:36:22
+ * @ Modified time: 2020-12-08 15:38:43
  * @ Description:
  */
 
@@ -36,9 +36,9 @@ class LoginController extends Controller
 
             $user = User::where('email', $request->email)->first();
             if (!$user || !Hash::check($request->password, $user->password)) {
-                throw ValidationException::withMessages([
-                    'email' => 'The provided email is incorrect'
-                ]);
+                //throw ValidationException::withMessages([
+                  //  'email' => 'The provided email is incorrect'
+               // ]);
                 throw new HttpResponseException(response()->json('Invalid User', 201));
             }
             
